@@ -136,8 +136,8 @@ void pinRead() {
   float T2_f = T2 * 0.0049;
 
   //Convert the voltages to temperatures
-  temp1 = roundf((T1_f - 0.5) / 0.01);
-  temp2 = roundf((T2_f - 0.5) / 0.01);
+  temp1 = (T1_f - 0.5) / 0.01;
+  temp2 = (T2_f - 0.5) / 0.01;
 
 }
 

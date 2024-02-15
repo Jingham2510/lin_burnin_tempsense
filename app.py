@@ -95,6 +95,9 @@ class main_window(QWidget):
         self.tempTimer = QTimer()
         self.tempTimer.timeout.connect(self.readTemp)
         #self.tempTimer.setInterval(500)
+        self.updateTempTimer = QTimer()
+        self.updateTempTimer.timeout.connect(self.updateTemp)
+        self.updateTempTimer.setInterval(500)
 
 
         #Placeholder Label (spreads out the page)
@@ -237,8 +240,10 @@ class main_window(QWidget):
         
         if not self.connected:
             try:
-                #Open USB serial port
+                #Open USB serial port - autodetect only works when you have the drivers
+                #REMEMBER TO CHANGE IF THINGS CANT CONNECT  CHANGE AT END
                 self.arduino = serial.Serial(self.arduinoCOMDetect())
+                #self.arduino = serial.Serial("COM26")
                 self.connected = 1 
             #If the device is already connected
             except PermissionError:        
@@ -267,6 +272,7 @@ class main_window(QWidget):
         if not self.tempTimer.isActive():
             #Start the Qtimer that reads the buffer every 0.5 seconds
             self.tempTimer.start()
+            
     
 
 
@@ -303,18 +309,26 @@ class main_window(QWidget):
     def readTemp(self):
 
         #Very simplified version - just read a line each time 
-        tempInfo = self.arduino.readline()
+        self.tempInfo = self.arduino.readline()
 
-        print(tempInfo)
+        print(self.tempInfo)
 
         #Extract the data from the tempinfo (remove wrapper info and seperate info)
-        tempInfo = tempInfo.decode().replace("<", "").replace(">", "").strip().split(" ")
+        self.tempInfo = self.tempInfo.decode().replace("<", "").replace(">", "").strip().split(" ")
+
+        #Only start the label update timer after tempinfo has been updated the first time
+        if not self.updateTempTimer.isActive():
+            self.updateTempTimer.start()
 
 
-        #Update the labels
-        for counter, temp in enumerate(tempInfo):
+
+    #Updates the temp labels - bit slower 
+    def updateTemp(self):
+         #Update the labels
+        for counter, temp in enumerate(self.tempInfo):
             self.tempLabels[counter].setText(f"{float(temp[3:]) + self.offsets[counter]}<sup>o</sup>C")
-            print(self.offsets[counter])
+
+
 
         
         
