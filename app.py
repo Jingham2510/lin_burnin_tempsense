@@ -1,6 +1,7 @@
 """
 Author: Joe Ingham
 Date Created: 12/02/2024
+Date Last Updated: 15/02/2024
 Description: Burnin Jig Tempsense - Connects to an arduino nano (via serial) and reads the temperatures recorded on the Qest Ku Burn-in Jig
 """
 
@@ -48,7 +49,7 @@ class main_window(QWidget):
         super(main_window, self).__init__()
         
         #Set the window title
-        self.setWindowTitle("Burn-in Jig Temp Reader")
+        self.setWindowTitle("Burn-in Jig Temp Reader - V1")
 
         #Determine the layout (i.e. grid style)
         layout = QGridLayout()
@@ -106,15 +107,18 @@ class main_window(QWidget):
 
 
 
+
+        #PFFSETS START PRECALIBRATED
+
         #PA A offset box
-        self.AOffset = 0
-        self.AOffsetLabel = QLabel("Offset: 0.0 <sup>o</sup>C")
+        self.AOffset = -3.0
+        self.AOffsetLabel = QLabel(f"Offset: {self.AOffset} <sup>o</sup>C")
         self.AOffsetLabel.setFont(QFont("Arial", 24))
         layout.addWidget(self.AOffsetLabel, 2, 0)
 
         #PA B offset box
-        self.BOffset = 0
-        self.BOffsetLabel = QLabel("Offset: 0.0 <sup>o</sup>C")
+        self.BOffset = -1.0
+        self.BOffsetLabel = QLabel(f"Offset: {self.BOffset} <sup>o</sup>C")
         self.BOffsetLabel.setFont(QFont("Arial", 24))
         layout.addWidget(self.BOffsetLabel, 2, 3)
 
@@ -326,7 +330,7 @@ class main_window(QWidget):
     def updateTemp(self):
          #Update the labels
         for counter, temp in enumerate(self.tempInfo):
-            self.tempLabels[counter].setText(f"{float(temp[3:]) + self.offsets[counter]}<sup>o</sup>C")
+            self.tempLabels[counter].setText(f"{round(float(temp[3:]) + self.offsets[counter], 2)}<sup>o</sup>C")
 
 
 
